@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "support_tickets")
 @Data
@@ -16,11 +18,21 @@ public class SupportTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Integer categoryId;
+
     @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String status;
+    private Boolean status;
+
+    private String mars;
+
+    private Boolean isactive;
+
+    private LocalDateTime createdate;
+
+    private LocalDateTime updateddate;
 }

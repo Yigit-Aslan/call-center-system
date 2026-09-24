@@ -8,5 +8,6 @@ public interface ISupportTicketService {
     List<SupportTicket> getAllTickets();
     Optional<SupportTicket> getTicketById(Long id);
     SupportTicket createTicket(SupportTicket ticket);
+    SupportTicket updateTicket(Long id, SupportTicket ticket);
     void deleteTicket(Long id);
 }

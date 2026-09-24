@@ -2,6 +2,7 @@ package com.yigitaslan.call_center_system.controller;
 
 import com.yigitaslan.call_center_system.model.SupportTicket;
 import com.yigitaslan.call_center_system.service.ISupportTicketService;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,12 @@ public class SupportTicketController {
     public ResponseEntity<SupportTicket> createTicket(@RequestBody SupportTicket ticket){
         SupportTicket createdTicket = ticketService.createTicket(ticket);
         return ResponseEntity.ok(createdTicket);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SupportTicket> updateTicket(@PathVariable Long id, @RequestBody SupportTicket ticket) {
+        SupportTicket updatedTicket = ticketService.updateTicket(id, ticket);
+        return ResponseEntity.ok(updatedTicket);
     }
         // 4. Talep sil (DELETE: /api/tickets/{id})
     @DeleteMapping("/{id}")
