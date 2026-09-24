@@ -14,7 +14,7 @@ public class SupportTicket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int Id;
+    private Long id;
 
     @Column(nullable = false)
     private String title;

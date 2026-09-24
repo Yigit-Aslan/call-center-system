@@ -23,7 +23,7 @@ public class SupportTicketServiceImpl implements ISupportTicketService {
     }
 
     @Override
-    public Optional<SupportTicket> getTicketById(int id) {
+    public Optional<SupportTicket> getTicketById(Long id) {
         return supportTicketRepository.findById(id);
     }
 
@@ -33,7 +33,7 @@ public class SupportTicketServiceImpl implements ISupportTicketService {
     }
 
     @Override
-    public void deleteTicket(int id) {
+    public void deleteTicket(Long id) {
         supportTicketRepository.deleteById(id);
     }
 }

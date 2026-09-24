@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface ISupportTicketService {
     List<SupportTicket> getAllTickets();
-    Optional<SupportTicket> getTicketById(int id);
+    Optional<SupportTicket> getTicketById(Long id);
     SupportTicket createTicket(SupportTicket ticket);
-    void deleteTicket(int id);
+    void deleteTicket(Long id);
 }

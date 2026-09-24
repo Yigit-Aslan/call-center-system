@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ISupportTicketRepository extends JpaRepository<SupportTicket, Integer> {
+public interface ISupportTicketRepository extends JpaRepository<SupportTicket, Long> {
 }

@@ -20,8 +20,8 @@ public class SupportTicketController {
         return ResponseEntity.ok(ticketService.getAllTickets());
     }
     // 2. ID'ye göre talep getir (GET: /api/tickets/{id})
-    @GetMapping
-    public ResponseEntity<SupportTicket> getTicketById(@PathVariable int id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<SupportTicket> getTicketById(@PathVariable Long id) {
         return  ticketService.getTicketById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -34,7 +34,7 @@ public class SupportTicketController {
     }
         // 4. Talep sil (DELETE: /api/tickets/{id})
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTicket(@PathVariable int id) {
+    public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
         ticketService.deleteTicket(id);
         return ResponseEntity.ok().build();
     }
