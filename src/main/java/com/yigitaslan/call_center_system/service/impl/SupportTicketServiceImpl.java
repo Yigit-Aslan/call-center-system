@@ -46,7 +46,7 @@ public class SupportTicketServiceImpl implements ISupportTicketService {
     public SupportTicket updateTicket(Long id, SupportTicket ticketDetails) {
         // 1. Veritabanından mevcut kaydı buluyoruz (id burada doludur)
         SupportTicket existingTicket = supportTicketRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Talep bulunamadı, ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Talep bulunamadı"));
 
         // 2. Gelen yeni verileri mevcut nesneye aktarıyoruz
         existingTicket.setTitle(ticketDetails.getTitle());
@@ -64,7 +64,7 @@ public class SupportTicketServiceImpl implements ISupportTicketService {
     @Override
     public void deleteTicket(Long id) {
         SupportTicket existingTicket = supportTicketRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Talep bulunamadı, ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Talep bulunamadı"));
 
         existingTicket.setIsactive(false);
 

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,12 +17,20 @@ public class SupportTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer categoryId;
+    @Column(name = "category_id")
+    private Long categoryId;
 
-    @Column(nullable = false)
+    // Yeni eklenen müşteri ilişkisi
+    @Column(name = "customer_id")
+    private Long customerId;
+
+    // Yeni eklenen temsilci ilişkisi
+    @Column(name = "agent_id")
+    private Long agentId;
+
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String description;
 
     private Boolean status;
@@ -32,7 +39,9 @@ public class SupportTicket {
 
     private Boolean isactive;
 
+    @Column(name = "createdate", updatable = false)
     private LocalDateTime createdate;
 
+    @Column(name = "updateddate")
     private LocalDateTime updateddate;
 }
