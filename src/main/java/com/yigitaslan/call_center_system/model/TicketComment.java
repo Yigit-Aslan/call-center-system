@@ -21,6 +21,9 @@ public class TicketComment {
     @Column(name = "ticket_id", nullable = false)
     private Long ticketId;
 
+    @Column(name = "agent_id", nullable = false)
+    private Long agentId;
+
     @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
     private String comment;
 

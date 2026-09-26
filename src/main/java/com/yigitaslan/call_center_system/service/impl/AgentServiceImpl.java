@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class AgentServiceImpl implements IAgentService {
     private final IAgentRepository agentRepository;
 

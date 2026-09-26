@@ -21,7 +21,7 @@ public class AgentController {
         return ResponseEntity.ok(agentService.getAllAgents());
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<Agent> getAgentById(@PathVariable Long id)
     {
         return agentService.getAgentById(id)
