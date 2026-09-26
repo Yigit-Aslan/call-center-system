@@ -34,7 +34,6 @@ public class CustomerServiceImpl implements  ICustomerService{
         LocalDateTime now = LocalDateTime.now();
         customer.setCreateDate(now);
 
-        // Varsayılan aktiflik durumu (isteğe bağlı)
         if (customer.getIsactive() == null) {
             customer.setIsactive(true);
         }
@@ -44,7 +43,7 @@ public class CustomerServiceImpl implements  ICustomerService{
 
     @Override
     public Customer updateCustomer(Long id, Customer customerDetails) {
-        // 1. Veritabanından mevcut kaydı buluyoruz (id burada doludur)
+
         Customer existingCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Müşteri bulunamadı"));
 

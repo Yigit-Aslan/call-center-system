@@ -33,4 +33,7 @@ public class Agent {
 
     @Column(name = "createdate")
     private LocalDateTime createDate = LocalDateTime.now();
+
+    @Column(name = "updatedDate")
+    private LocalDateTime updatedDate = LocalDateTime.now();
 }

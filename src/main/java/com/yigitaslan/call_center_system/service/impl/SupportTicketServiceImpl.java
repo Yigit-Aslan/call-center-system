@@ -34,7 +34,6 @@ public class SupportTicketServiceImpl implements ISupportTicketService {
         LocalDateTime now = LocalDateTime.now();
         ticket.setCreatedate(now);
 
-        // Varsayılan aktiflik durumu (isteğe bağlı)
         if (ticket.getIsactive() == null) {
             ticket.setIsactive(true);
         }
@@ -44,11 +43,10 @@ public class SupportTicketServiceImpl implements ISupportTicketService {
 
     @Override
     public SupportTicket updateTicket(Long id, SupportTicket ticketDetails) {
-        // 1. Veritabanından mevcut kaydı buluyoruz (id burada doludur)
+
         SupportTicket existingTicket = supportTicketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Talep bulunamadı"));
 
-        // 2. Gelen yeni verileri mevcut nesneye aktarıyoruz
         existingTicket.setTitle(ticketDetails.getTitle());
         existingTicket.setDescription(ticketDetails.getDescription());
         existingTicket.setStatus(ticketDetails.getStatus());
@@ -57,7 +55,6 @@ public class SupportTicketServiceImpl implements ISupportTicketService {
         existingTicket.setCategoryId(ticketDetails.getCategoryId());
         existingTicket.setUpdateddate(LocalDateTime.now());
 
-        // 3. KESİNLİKLE existingTicket kaydedilmelidir (ticketDetails DEĞİL!)
         return supportTicketRepository.save(existingTicket);
     }
 
