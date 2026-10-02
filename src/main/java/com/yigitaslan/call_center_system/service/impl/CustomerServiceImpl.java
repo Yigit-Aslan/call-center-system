@@ -45,7 +45,7 @@ public class CustomerServiceImpl implements  ICustomerService{
     public Customer updateCustomer(Long id, Customer customerDetails) {
 
         Customer existingCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Müşteri bulunamadı"));
+                .orElseThrow(() -> new RuntimeException("Müşteri bulunamadı, ID: " + id));
 
 
         existingCustomer.setFirstName(customerDetails.getFirstName());
@@ -57,6 +57,8 @@ public class CustomerServiceImpl implements  ICustomerService{
         if (customerDetails.getIsactive() != null) {
             existingCustomer.setIsactive(customerDetails.getIsactive());
         }
+
+        existingCustomer.setUpdatedDate(LocalDateTime.now());
 
         return customerRepository.save(existingCustomer);
     }
