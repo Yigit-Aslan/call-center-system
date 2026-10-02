@@ -3,7 +3,6 @@ package com.yigitaslan.call_center_system.service.impl;
 import com.yigitaslan.call_center_system.model.TicketComment;
 import com.yigitaslan.call_center_system.repository.ITicketCommentRepository;
 import com.yigitaslan.call_center_system.service.ITicketCommentService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

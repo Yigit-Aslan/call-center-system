@@ -3,7 +3,6 @@ package com.yigitaslan.call_center_system.controller;
 
 import com.yigitaslan.call_center_system.model.Customer;
 import com.yigitaslan.call_center_system.service.ICustomerService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

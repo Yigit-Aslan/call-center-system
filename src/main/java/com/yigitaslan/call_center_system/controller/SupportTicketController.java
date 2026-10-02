@@ -2,7 +2,6 @@ package com.yigitaslan.call_center_system.controller;
 
 import com.yigitaslan.call_center_system.model.SupportTicket;
 import com.yigitaslan.call_center_system.service.ISupportTicketService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

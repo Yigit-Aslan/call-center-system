@@ -127,6 +127,24 @@ class SupportTicketServiceImplTest {
     }
 
     @Test
+    void updateTicket_WhenActiveStatusIsUnset_ShouldPreserveExistingStatus() {
+        Long ticketId = 1L;
+        SupportTicket existingTicket = createTicket(ticketId);
+        existingTicket.setIsactive(true);
+        SupportTicket updateDetails = new SupportTicket();
+        updateDetails.setTitle("Updated title");
+        updateDetails.setIsactive(null);
+
+        when(supportTicketRepository.findById(ticketId)).thenReturn(Optional.of(existingTicket));
+        when(supportTicketRepository.save(existingTicket)).thenReturn(existingTicket);
+
+        SupportTicket result = supportTicketService.updateTicket(ticketId, updateDetails);
+
+        assertTrue(result.getIsactive());
+        verify(supportTicketRepository).save(existingTicket);
+    }
+
+    @Test
     void updateTicket_WhenTicketDoesNotExist_ShouldThrowExceptionWithoutSaving() {
         Long ticketId = 99L;
         when(supportTicketRepository.findById(ticketId)).thenReturn(Optional.empty());

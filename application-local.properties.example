@@ -1,0 +1,13 @@
+# Copy this file to application-local.properties and replace the SQL Server
+# values with credentials for your local database. This local file is ignored
+# by Git and is loaded automatically when the application starts from the project root.
+spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=call_center_db;encrypt=true;trustServerCertificate=true
+spring.datasource.username=sa
+spring.datasource.password=REPLACE_WITH_YOUR_LOCAL_SQL_SERVER_PASSWORD
+
+# Local-only API credentials. Use a password of at least 12 characters.
+app.security.username=local-api-user
+app.security.password=REPLACE_WITH_A_STRONG_LOCAL_API_PASSWORD
+app.security.require-https=false
+server.port=8080
+server.ssl.enabled=false

@@ -51,7 +51,9 @@ public class SupportTicketServiceImpl implements ISupportTicketService {
         existingTicket.setDescription(ticketDetails.getDescription());
         existingTicket.setStatus(ticketDetails.getStatus());
         existingTicket.setMars(ticketDetails.getMars());
-        existingTicket.setIsactive(ticketDetails.getIsactive());
+        if (ticketDetails.getIsactive() != null) {
+            existingTicket.setIsactive(ticketDetails.getIsactive());
+        }
         existingTicket.setCategoryId(ticketDetails.getCategoryId());
         existingTicket.setUpdateddate(LocalDateTime.now());
 

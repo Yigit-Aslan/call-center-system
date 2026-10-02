@@ -2,7 +2,6 @@ package com.yigitaslan.call_center_system.service.impl;
 
 
 import com.yigitaslan.call_center_system.model.Category;
-import com.yigitaslan.call_center_system.model.SupportTicket;
 import com.yigitaslan.call_center_system.repository.ICategoryRepository;
 import com.yigitaslan.call_center_system.service.ICategoryService;
 import org.springframework.stereotype.Service;

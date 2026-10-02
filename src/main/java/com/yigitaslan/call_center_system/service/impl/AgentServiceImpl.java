@@ -1,7 +1,6 @@
 package com.yigitaslan.call_center_system.service.impl;
 
 import com.yigitaslan.call_center_system.model.Agent;
-import com.yigitaslan.call_center_system.model.Customer;
 import com.yigitaslan.call_center_system.repository.IAgentRepository;
 import com.yigitaslan.call_center_system.service.IAgentService;
 import org.springframework.stereotype.Service;
