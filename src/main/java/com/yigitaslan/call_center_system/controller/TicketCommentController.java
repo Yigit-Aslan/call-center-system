@@ -2,8 +2,6 @@ package com.yigitaslan.call_center_system.controller;
 
 import com.yigitaslan.call_center_system.model.TicketComment;
 import com.yigitaslan.call_center_system.service.ITicketCommentService;
-import com.yigitaslan.call_center_system.service.impl.TicketCommentServiceImpl;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +33,7 @@ public class TicketCommentController {
     }
 
     @PostMapping
-    public ResponseEntity<TicketComment> createTicketComment(@PathVariable TicketComment comment)
+    public ResponseEntity<TicketComment> createTicketComment(@RequestBody TicketComment comment)
     {
         TicketComment createdComment = ticketCommentService.createTicketComment(comment);
 
