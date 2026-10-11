@@ -2,9 +2,9 @@ package com.yigitaslan.call_center_system.controller;
 
 import com.yigitaslan.call_center_system.model.SupportTicket;
 import com.yigitaslan.call_center_system.service.ISupportTicketService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -21,15 +21,19 @@ class SupportTicketControllerTest {
     @Mock
     private ISupportTicketService ticketService;
 
-    @InjectMocks
     private SupportTicketController ticketController;
+
+    @BeforeEach
+    void setUp() {
+        ticketController = new SupportTicketController(ticketService, Runnable::run);
+    }
 
     @Test
     void getAllTickets_ShouldReturnOkWithTickets() {
         List<SupportTicket> tickets = List.of(createTicket(1L));
         when(ticketService.getAllTickets()).thenReturn(tickets);
 
-        var response = ticketController.getAllTickets();
+        var response = ticketController.getAllTickets().join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(tickets, response.getBody());
@@ -41,7 +45,7 @@ class SupportTicketControllerTest {
         SupportTicket ticket = createTicket(1L);
         when(ticketService.getTicketById(1L)).thenReturn(Optional.of(ticket));
 
-        var response = ticketController.getTicketById(1L);
+        var response = ticketController.getTicketById(1L).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ticket, response.getBody());
@@ -52,7 +56,7 @@ class SupportTicketControllerTest {
     void getTicketById_WhenTicketDoesNotExist_ShouldReturnNotFound() {
         when(ticketService.getTicketById(99L)).thenReturn(Optional.empty());
 
-        var response = ticketController.getTicketById(99L);
+        var response = ticketController.getTicketById(99L).join();
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         verify(ticketService).getTicketById(99L);
@@ -63,7 +67,7 @@ class SupportTicketControllerTest {
         SupportTicket ticket = createTicket(null);
         when(ticketService.createTicket(ticket)).thenReturn(ticket);
 
-        var response = ticketController.createTicket(ticket);
+        var response = ticketController.createTicket(ticket).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ticket, response.getBody());
@@ -75,7 +79,7 @@ class SupportTicketControllerTest {
         SupportTicket ticket = createTicket(1L);
         when(ticketService.updateTicket(1L, ticket)).thenReturn(ticket);
 
-        var response = ticketController.updateTicket(1L, ticket);
+        var response = ticketController.updateTicket(1L, ticket).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ticket, response.getBody());
@@ -84,7 +88,7 @@ class SupportTicketControllerTest {
 
     @Test
     void deleteTicket_ShouldReturnOkAndDelegateDeletion() {
-        var response = ticketController.deleteTicket(1L);
+        var response = ticketController.deleteTicket(1L).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(ticketService).deleteTicket(1L);

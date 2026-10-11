@@ -2,9 +2,9 @@ package com.yigitaslan.call_center_system.controller;
 
 import com.yigitaslan.call_center_system.model.TicketComment;
 import com.yigitaslan.call_center_system.service.ITicketCommentService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -24,15 +24,19 @@ class TicketCommentControllerTest {
     @Mock
     private ITicketCommentService ticketCommentService;
 
-    @InjectMocks
     private TicketCommentController ticketCommentController;
+
+    @BeforeEach
+    void setUp() {
+        ticketCommentController = new TicketCommentController(ticketCommentService, Runnable::run);
+    }
 
     @Test
     void getAllTicketComments_ShouldReturnOkWithComments() {
         List<TicketComment> comments = List.of(createComment(1L));
         when(ticketCommentService.getAllTicketComment()).thenReturn(comments);
 
-        var response = ticketCommentController.getAllTicketComments();
+        var response = ticketCommentController.getAllTicketComments().join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(comments, response.getBody());
@@ -44,7 +48,7 @@ class TicketCommentControllerTest {
         TicketComment comment = createComment(1L);
         when(ticketCommentService.getTicketCommentById(1L)).thenReturn(Optional.of(comment));
 
-        var response = ticketCommentController.getTicketCommentById(1L);
+        var response = ticketCommentController.getTicketCommentById(1L).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(comment, response.getBody());
@@ -55,7 +59,7 @@ class TicketCommentControllerTest {
     void getTicketCommentById_WhenCommentDoesNotExist_ShouldReturnNotFound() {
         when(ticketCommentService.getTicketCommentById(99L)).thenReturn(Optional.empty());
 
-        var response = ticketCommentController.getTicketCommentById(99L);
+        var response = ticketCommentController.getTicketCommentById(99L).join();
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         verify(ticketCommentService).getTicketCommentById(99L);
@@ -66,7 +70,7 @@ class TicketCommentControllerTest {
         TicketComment comment = createComment(null);
         when(ticketCommentService.createTicketComment(comment)).thenReturn(comment);
 
-        var response = ticketCommentController.createTicketComment(comment);
+        var response = ticketCommentController.createTicketComment(comment).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(comment, response.getBody());

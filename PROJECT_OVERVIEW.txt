@@ -1,0 +1,152 @@
+CALL CENTER SYSTEM - PROJECT OVERVIEW
+=====================================
+
+Purpose
+-------
+This is a Java REST API for a call-center application. It provides operations
+for agents, customers, support-ticket categories, support tickets, and ticket
+comments. The application uses Spring Boot and persists data through Spring
+Data JPA to Microsoft SQL Server.
+
+Technology
+----------
+- Java 21
+- Spring Boot 4.1.1
+- Spring MVC REST controllers
+- Spring Data JPA repositories
+- CompletableFuture-based asynchronous Spring MVC request handling
+- A bounded ThreadPoolTaskExecutor for business API work
+- Microsoft SQL Server and the Microsoft JDBC driver
+- Spring Security
+- JUnit 5 and Mockito for tests
+- H2 in-memory database for application-context tests
+- Maven Wrapper (mvnw.cmd on Windows)
+
+Application structure
+---------------------
+- model/: JPA entities representing database records.
+- repository/: Spring Data JPA repository interfaces for database access.
+- service/ and service/impl/: service contracts and business logic.
+- controller/: HTTP routes and request/response handling.
+- config/SecurityConfig.java: authentication, authorization, HTTPS, and CSRF
+  configuration.
+- config/AsyncConfig.java: the named apiExecutor used by asynchronous
+  controller operations.
+
+The application generally follows a controller-service-repository design:
+controllers receive HTTP requests and delegate to services; services apply
+business logic and call repositories; repositories use JPA to access SQL
+Server. The controllers return JSON responses.
+
+Asynchronous request handling
+-----------------------------
+The business REST controllers return CompletableFuture-wrapped
+ResponseEntity values. Each controller schedules its service call on the
+shared apiExecutor. Spring MVC can release the initial servlet request thread
+while that task executes, then sends the normal API response after completion.
+This is request-level asynchronous handling: clients still wait for the
+operation's result, and the API does not currently enqueue long-running jobs
+or return HTTP 202 responses.
+
+Service and repository methods remain synchronous. They use blocking Spring
+Data JPA, so a database operation occupies an apiExecutor worker while it
+waits for SQL Server. This keeps blocking work off the servlet request thread,
+but it is not end-to-end nonblocking I/O. AsyncConfig currently configures 8
+core threads, up to 32 threads, and a queue capacity of 500. Review these
+limits against the database connection pool and expected production traffic;
+more worker threads do not create more database capacity. A truly reactive
+database flow would require replacing JPA with a reactive persistence stack.
+
+Main API routes
+---------------
+- /api/agent         - list, retrieve, create, update, and deactivate agents.
+- /api/customers     - list, retrieve, create, update, and deactivate customers.
+- /api/category      - list and retrieve categories.
+- /api/tickets       - list, retrieve, create, update, and deactivate tickets.
+- /api/ticketcomments - list, retrieve, and create ticket comments.
+- /api/csrf          - retrieve a CSRF token for state-changing API requests.
+
+All API routes require HTTP Basic authentication. Category and retrieval
+operations use GET. Create operations use POST; update uses PUT; deletion
+endpoints perform soft deletion by setting the record inactive.
+
+Security and local configuration
+--------------------------------
+- No default API account or password is embedded in the application. Configure
+  APP_SECURITY_USERNAME and APP_SECURITY_PASSWORD externally. The password
+  must be at least 12 characters and is BCrypt-encoded for authentication.
+- The API is stateless and requires authentication for all routes.
+- HTTPS is required by default. Configure a PKCS#12 keystore for deployment.
+- CSRF protection is enabled. For POST, PUT, and DELETE, first call GET
+  /api/csrf with Basic Auth, then send the XSRF-TOKEN cookie and its token in
+  the X-XSRF-TOKEN header. GET requests do not require a CSRF token.
+- SQL Server connection details and credentials are configurable through
+  environment variables. Encryption is enabled and server-certificate
+  verification is enabled by default.
+- SQL statement logging and Open EntityManager in View are disabled.
+
+For local development, copy application-local.properties.example to
+application-local.properties at the project root. Replace the example database
+and API password values with local credentials. The real local file is ignored
+by Git; never commit credentials. The example uses HTTP and trusts the local
+SQL Server certificate for convenience only; do not copy those relaxed TLS
+settings to a production deployment.
+
+Recent development work
+-----------------------
+- Added service unit tests for AgentServiceImpl, CategoryServiceImpl,
+  CustomerServiceImpl, SupportTicketServiceImpl, and TicketCommentServiceImpl.
+- Added controller unit tests for all REST controllers.
+- Updated the business controllers to execute service calls asynchronously
+  using CompletableFuture and the shared apiExecutor; updated controller tests
+  for the asynchronous return types.
+- Added security configuration tests and an application-context test using H2.
+- Added an integration test showing that POST, PUT, and DELETE requests without
+  CSRF tokens are rejected.
+- Fixed customer updates so updatedDate is refreshed.
+- Fixed support-ticket updates so a missing isactive field preserves its
+  current value rather than replacing it with null.
+- Fixed ticket-comment creation to bind JSON request content using @RequestBody.
+- Added duplicate-ticket detection. A new ticket is rejected with HTTP 409
+  when an existing ticket has the same customer, agent, category, title,
+  description, status, priority (mars), and active state. Generated IDs and
+  timestamps are not part of this comparison.
+- Removed committed default credentials from runtime configuration and moved
+  development settings to an ignored local properties file.
+
+Development and testing methods
+-------------------------------
+- Service unit tests use JUnit 5, MockitoExtension, @Mock, and @InjectMocks.
+  Repositories are mocked, so these tests verify service behavior without
+  requiring a live database.
+- Controller unit tests call controller methods directly with mocked services.
+  They check response status, response body, service delegation, and not-found
+  behavior.
+- The Spring application-context and CSRF integration tests use Spring Boot
+  test support and MockMvc. H2 is used so tests do not depend on local SQL
+  Server credentials.
+- Tests were run with the Maven Wrapper. Run the full suite from the project
+  root on Windows with:
+
+      .\mvnw.cmd test
+
+- During development, focused tests were also run by selecting test classes
+  with Maven's -Dtest option. The full suite passed after the recorded changes.
+- Git changes were committed and pushed to the main branch. The latest recorded
+  commit is c40914a, "Harden API security and reject duplicate tickets".
+
+Known limitations and follow-up considerations
+-----------------------------------------------
+- Agent-specific login has not been implemented. The current API uses one
+  configured Basic Auth account, so it does not distinguish individual agents.
+- Duplicate detection uses a database existence check before saving. Concurrent
+  identical requests may still race unless the database also enforces an
+  appropriate uniqueness rule or the operation is otherwise made atomic.
+- The services do not yet enforce ownership/assignment rules for which
+  customer or agent may read or modify a ticket.
+- Async request execution does not itself implement background ticket
+  processing or agent assignment/workflow behavior. Service and JPA operations
+  remain synchronous and consume executor threads while database calls run.
+- Before production deployment, configure managed identities/secrets, TLS,
+  least-privilege database access, and authorization rules appropriate to the
+  intended users.

@@ -3,48 +3,54 @@ package com.yigitaslan.call_center_system.controller;
 
 import com.yigitaslan.call_center_system.model.Customer;
 import com.yigitaslan.call_center_system.service.ICustomerService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
 @RestController
 @RequestMapping("/api/customers")
 public class CustomerController {
     private final ICustomerService customerService;
+    private final Executor apiExecutor;
 
-    public CustomerController(ICustomerService _customerService){
+    public CustomerController(ICustomerService _customerService, @Qualifier("apiExecutor") Executor apiExecutor){
         customerService = _customerService;
+        this.apiExecutor = apiExecutor;
     }
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getAllCustomers(){
-        return ResponseEntity.ok(customerService.getAllCustomers());
+    public CompletableFuture<ResponseEntity<List<Customer>>> getAllCustomers(){
+        return CompletableFuture.supplyAsync(() -> ResponseEntity.ok(customerService.getAllCustomers()), apiExecutor);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
-        return  customerService.getCustomerById(id)
+    public CompletableFuture<ResponseEntity<Customer>> getCustomerById(@PathVariable Long id) {
+        return CompletableFuture.supplyAsync(() -> customerService.getCustomerById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build()), apiExecutor);
     }
 
     // 3. Yeni talep oluştur (POST: /api/customers)
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@RequestBody Customer customer){
-        Customer createCustomer = customerService.createCustomer(customer);
-        return ResponseEntity.ok(createCustomer);
+    public CompletableFuture<ResponseEntity<Customer>> createCustomer(@RequestBody Customer customer){
+        return CompletableFuture.supplyAsync(() -> ResponseEntity.ok(customerService.createCustomer(customer)), apiExecutor);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
-        Customer updatedCustomer = customerService.updateCustomer(id, customer);
-        return ResponseEntity.ok(updatedCustomer);
+    public CompletableFuture<ResponseEntity<Customer>> updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
+        return CompletableFuture.supplyAsync(() -> ResponseEntity.ok(customerService.updateCustomer(id, customer)), apiExecutor);
     }
 
     // 4. Talep sil (DELETE: /api/tickets/{id})
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
-        return ResponseEntity.ok().build();
+    public CompletableFuture<ResponseEntity<Void>> deleteCustomer(@PathVariable Long id) {
+        return CompletableFuture.supplyAsync(() -> {
+            customerService.deleteCustomer(id);
+            return ResponseEntity.ok().build();
+        }, apiExecutor);
     }
 }

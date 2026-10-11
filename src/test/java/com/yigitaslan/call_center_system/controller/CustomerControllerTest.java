@@ -2,9 +2,9 @@ package com.yigitaslan.call_center_system.controller;
 
 import com.yigitaslan.call_center_system.model.Customer;
 import com.yigitaslan.call_center_system.service.ICustomerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -21,15 +21,19 @@ class CustomerControllerTest {
     @Mock
     private ICustomerService customerService;
 
-    @InjectMocks
     private CustomerController customerController;
+
+    @BeforeEach
+    void setUp() {
+        customerController = new CustomerController(customerService, Runnable::run);
+    }
 
     @Test
     void getAllCustomers_ShouldReturnOkWithCustomers() {
         List<Customer> customers = List.of(createCustomer(1L));
         when(customerService.getAllCustomers()).thenReturn(customers);
 
-        var response = customerController.getAllCustomers();
+        var response = customerController.getAllCustomers().join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(customers, response.getBody());
@@ -41,7 +45,7 @@ class CustomerControllerTest {
         Customer customer = createCustomer(1L);
         when(customerService.getCustomerById(1L)).thenReturn(Optional.of(customer));
 
-        var response = customerController.getCustomerById(1L);
+        var response = customerController.getCustomerById(1L).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(customer, response.getBody());
@@ -52,7 +56,7 @@ class CustomerControllerTest {
     void getCustomerById_WhenCustomerDoesNotExist_ShouldReturnNotFound() {
         when(customerService.getCustomerById(99L)).thenReturn(Optional.empty());
 
-        var response = customerController.getCustomerById(99L);
+        var response = customerController.getCustomerById(99L).join();
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         verify(customerService).getCustomerById(99L);
@@ -63,7 +67,7 @@ class CustomerControllerTest {
         Customer customer = createCustomer(null);
         when(customerService.createCustomer(customer)).thenReturn(customer);
 
-        var response = customerController.createCustomer(customer);
+        var response = customerController.createCustomer(customer).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(customer, response.getBody());
@@ -75,7 +79,7 @@ class CustomerControllerTest {
         Customer customer = createCustomer(1L);
         when(customerService.updateCustomer(1L, customer)).thenReturn(customer);
 
-        var response = customerController.updateCustomer(1L, customer);
+        var response = customerController.updateCustomer(1L, customer).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(customer, response.getBody());
@@ -84,7 +88,7 @@ class CustomerControllerTest {
 
     @Test
     void deleteCustomer_ShouldReturnOkAndDelegateDeletion() {
-        var response = customerController.deleteCustomer(1L);
+        var response = customerController.deleteCustomer(1L).join();
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(customerService).deleteCustomer(1L);
